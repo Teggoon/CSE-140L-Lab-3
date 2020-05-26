@@ -103,18 +103,22 @@ initial begin
   #30ns w_left_sensor = 1'b0;
   #200ns;
 
+  // 470 ns
 // Now set traffic at NS. Green NS lasts past sensor falling
   test_cnt++                  ;
   ns_sensor           = 1'b1  ;
   #60ns ns_sensor     = 1'b0  ;
   #200ns;
 
+  // 730 ns
 // Check NS again, but hold for more than 5 cycles.
 //   NS should cycle green-yellow-red when side traffic appears
   test_cnt++;
   ns_sensor              = 1'b1;
   #100ns e_left_sensor   = 1'b1;
+  $display("e_left_sensor on");
   #200ns ns_sensor       = 1'b0;
+  $display("ns_sensor off");
   #20ns  e_left_sensor   = 1'b0;
   #100ns;
 

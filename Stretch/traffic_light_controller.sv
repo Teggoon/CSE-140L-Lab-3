@@ -34,14 +34,17 @@ module traffic_light_controller(
 	 
 	 
 	else begin
+	//$display(ctr_10);
 	  previous_state = present_state;
 	  present_state = next_state;
 	  
-	  if(previous_state != present_state) ctr_10 = 1;
+	  if(previous_state != present_state) begin ctr_10 = 1; 
+	  //$display("reset ctr_10"); 
+	  end
 	  else if (ctr_10 < 10) ctr_10 = ctr_10 + 1;
 	  else 				ctr_10 = ctr_10;
 	  
-	  if(previous_state != present_state) ctr_5 = 0;
+	  if(previous_state != present_state) ctr_5 = 2;
 	  else if (ctr_5 < 5 && !(e_left_sensor) && !(e_str_sensor) && !(w_left_sensor) && !(w_str_sensor) && !(ns_sensor)) ctr_5 = ctr_5 + 1;
 	  else 				ctr_5 = ctr_5;
 	
@@ -541,10 +544,13 @@ module traffic_light_controller(
 						else if (pri == 1) pri = 1;
 						else pri = 2;
 						last_green_state <= 4'b1001;
-						if((ctr_10 == 10 || (!ns_sensor)) && (w_str_sensor || w_left_sensor || e_str_sensor || e_left_sensor)) begin
+						//$display(ctr_5);
+						if(ctr_10 == 10 && ((!ns_sensor) || (w_str_sensor || w_left_sensor || e_str_sensor || e_left_sensor))) begin
 								next_state = 'b1010;
+								//$display("At least display your 10");
 						end
 						else if(ctr_5 == 5)    begin
+								//$display("At least display your 5");
 								next_state = 'b1010;
 						end
 						else								   next_state = 'b1001;
