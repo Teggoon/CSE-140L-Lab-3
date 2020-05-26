@@ -1,0 +1,58 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dC:/Users/Daniel/Desktop/CSE 140L/Lab 2 fr/CSE-140L-Lab-2/Part 2
+vtraffic1_tb
+Z0 DXx6 sv_std 3 std 0 22 AD7iAPLo6nTIKk<N0eo=D3
+!s110 1590391075
+!i10b 1
+!s100 cKdcUOQfDR9Tk6`lNbTD61
+ISh0LZ850LcGQ4@[>YRBfR2
+Z1 VDg1SIo80bB@j0V0VzS_@n1
+!s105 traffic2_tb_sv_unit
+S1
+Z2 dC:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch
+w1590390751
+8C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic2_tb.sv
+FC:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic2_tb.sv
+L0 7
+Z3 OV;L;10.5b;63
+r1
+!s85 0
+31
+!s108 1590391075.000000
+!s107 C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic2_tb.sv|
+!s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic2_tb.sv|
+!i113 1
+Z4 o-work work -sv
+Z5 tCvgOpt 0
+vtraffic_light_controller
+R0
+!s110 1590391073
+!i10b 1
+!s100 o@WCM5XkVZi=S^S9nC6IA1
+I97>f6a_bfm>=SQ@CSi4:X3
+R1
+!s105 traffic_light_controller_sv_unit
+S1
+R2
+w1590390377
+8C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv
+FC:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv
+L0 6
+R3
+r1
+!s85 0
+31
+!s108 1590391073.000000
+!s107 C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv|
+!s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv|
+!i113 1
+R4
+R5
