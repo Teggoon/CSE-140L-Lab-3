@@ -20,6 +20,7 @@ module traffic_light_controller(
   logic[3:0] previous_state, present_state, next_state, last_green_state;
   logic[3:0] ctr_10;
   logic[2:0] ctr_5;
+  logic[2:0] pri = 0;
 					  
   // sequential part of our state machine
   always_ff @(posedge clk)
@@ -30,6 +31,7 @@ module traffic_light_controller(
 	  ctr_10 = 0;
 	  ctr_5 = 0;
 	 end
+	 
 	 
 	else begin
 	  previous_state = present_state;
@@ -66,16 +68,386 @@ module traffic_light_controller(
 		case(present_state)
 			
 			'b0000:  begin
-						last_green_state = 4'b0000;
-						if	(e_str_sensor && w_str_sensor)        	next_state = 'b0001;  	// EW straight
+					last_green_state = 4'b0000;
+					case(pri)
+						0: begin
+							if	((e_str_sensor || w_str_sensor) && !(w_left_sensor || e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	(!(e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor) && ns_sensor) 
+								begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
+							else begin
+								next_state = 'b0000;  	// Red
+								pri = 0;
+								end
+						end
+						1: begin
+						if (!ns_sensor) begin
+							if	((e_str_sensor || w_str_sensor) && !(w_left_sensor || e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin 
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else begin
+								next_state = 'b0000;  	// Red
+								pri = 0;
+								end
+							end
+							else begin //ns_sensor = 1
+							
+							if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin 
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
+								
+							/*if	((e_left_sensor || w_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin 
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
+							end
+							*/
+							end
+						end
+						2: begin
+						if (!ns_sensor) begin
+							if	((e_str_sensor || w_str_sensor) && !(w_left_sensor || e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	(!(e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor) && ns_sensor) 
+								begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
+							else begin
+								next_state = 'b0000;  	// Red
+								pri = 0;
+								end
+						end
+						else begin // ns_sensor == 1
+							pri = 0;
+							next_state= 'b1001;
+						end
+						end
+						default: begin
+							pri = 0;
+							next_state= 'b0000;
+							
+						end
+						/*
 						else if	(e_left_sensor && w_left_sensor) next_state = 'b0011;  	// EW left
-						else if	(w_left_sensor && w_str_sensor) 	next_state = 'b0101;  	// W str and leftc
+						else if	(w_left_sensor && w_str_sensor) 	next_state = 'b0101;  	// W str and left
 						else if	(e_left_sensor && e_str_sensor) 	next_state = 'b0111;  	// E str and left
 						else if	(ns_sensor) 							next_state = 'b1001;  	// NS str
 						else													next_state = 'b0000;  	// Stay: R
+						*/
+						endcase
 					  end
 					  
 			'b0001:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state = 4'b0001;
 						if((ctr_10 == 10 || (!e_str_sensor && !w_str_sensor)) && (e_left_sensor || w_left_sensor || ns_sensor)) begin
 								next_state = 'b0010;
@@ -87,12 +459,18 @@ module traffic_light_controller(
 					  end
 			
 			'b0010:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state = 4'b0001;
 						if(ctr_10 == 2)        			next_state = 'b1011; // All red after 2 cycles
 						else								   next_state = 'b0010;
 						end
 			
 			'b0011:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state <= 4'b0011;
 						if((ctr_10 == 10 || (!e_left_sensor && !w_left_sensor)) && (e_str_sensor || w_str_sensor || ns_sensor)) begin
 								next_state = 'b0100;
@@ -104,12 +482,18 @@ module traffic_light_controller(
 					  end
 					  
 			'b0100:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state = 4'b0011;
 						if(ctr_10 == 2)        			next_state = 'b1011; // All red after 2 cycles
 					  else								   next_state = 'b0100;
 					  end
 			
 			'b0101:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state <= 4'b0101;
 						if((ctr_10 == 10 || (!w_str_sensor && !w_left_sensor)) && (e_str_sensor || e_left_sensor || ns_sensor)) begin
 								next_state = 'b0110;
@@ -121,12 +505,18 @@ module traffic_light_controller(
 					  end
 					  
 			'b0110:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state = 4'b0101;
 						if(ctr_10 == 2)        			next_state = 'b1011; // All red after 2 cycles
 						else								   next_state = 'b0110;
 					  end	
 			
 			'b0111:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state <= 4'b0111;
 						if((ctr_10 == 10 || (!e_str_sensor && !e_left_sensor)) && (w_str_sensor || w_left_sensor || ns_sensor)) begin
 								next_state = 'b1000;
@@ -138,12 +528,18 @@ module traffic_light_controller(
 					  end
 					  
 			'b1000:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state = 4'b0111;
 						if(ctr_10 == 2)        			next_state = 'b1011; // All red after 2 cycles
 						else								   next_state = 'b1000;
 					  end	
 					  
 			'b1001:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state <= 4'b1001;
 						if((ctr_10 == 10 || (!ns_sensor)) && (w_str_sensor || w_left_sensor || e_str_sensor || e_left_sensor)) begin
 								next_state = 'b1010;
@@ -155,161 +551,397 @@ module traffic_light_controller(
 					  end
 					  
 			'b1010:  begin
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						last_green_state = 4'b1001;
 						if(ctr_10 == 2)        			next_state = 'b1011; // All red after 2 cycles
 						else								   next_state = 'b1010;
 					  end	
 			
 			'b1011:  begin
-						//------------------- Priority -----------------------------
-						// from EW straight
-					   if(last_green_state == 'b0001 && e_left_sensor && w_left_sensor) begin
-							next_state = 'b0011; //EW Left -- G
-							last_green_state = 4'b0001;
-					   end
-					  
-						// from EW left
-					   else if(last_green_state == 'b0011  && w_str_sensor && w_left_sensor) begin
-							next_state = 'b0101; //W Str + Left
-							last_green_state = 4'b0011;
-					   end
-					  
-						// from W Str + Left
-					   else if(last_green_state == 'b0101 && e_str_sensor && e_left_sensor) begin
-							next_state = 'b0111;	//EW Straight -- G
-							last_green_state = 4'b0101;
-					   end
-						
-						// from E Str + Left
-					   else if(last_green_state == 'b0111 && ns_sensor) begin
-							next_state = 'b1001;	//EW Straight -- G
-							last_green_state = 4'b0111;
-					   end
-						
-						// from NS
-					   else if(last_green_state == 'b1001 && e_str_sensor && w_str_sensor) begin
-							next_state = 'b0001;	//EW Straight -- G
-							last_green_state = 4'b1001;
-					   end
+					last_green_state = 4'b0000;
 					
-					// --------------------- Non-priority -------------------------  
-					  
-						// 0001: EW-straight
-						// 0011: EW-left
-						// 0101: W str and left
-						// 0111: E str and left
-						// 1001: NS straight
-					  
-						// 3 of EW straight! Want 0101, 0111, 1001
-						
-					   else if(last_green_state == 'b0001) begin
-						
-							if (w_str_sensor && w_left_sensor) begin
-								next_state = 'b0101;  //W str and left
-							end
-							else if (e_str_sensor && e_left_sensor) begin
-								next_state = 'b0111;  //E str and left
-							end
-							else if (ns_sensor) begin
-								next_state = 'b1001;  //NS straight
-							end
+					case(pri)
+						0: begin
+							if	((e_str_sensor || w_str_sensor) && !(w_left_sensor || e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	(!(e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor) && ns_sensor) 
+								begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
 							else begin
-								next_state = 'b0000;
-							end
-							
-							last_green_state = 4'b0001;
-					   end
-						
-					  
-					  
-					   // 3 of EW left! Want 0001, 0111, 1001
-						else if(last_green_state == 'b0011) begin
-						
-							if (w_str_sensor && e_str_sensor) begin
-								next_state = 'b0001;  //W str and left
-							end
-							else if (e_str_sensor && e_left_sensor) begin
-								next_state = 'b0111;  //E str and left
-							end
-							else if (ns_sensor) begin
-								next_state = 'b1001;  //NS straight
-							end
-							else begin
-								next_state = 'b0000;
-							end
-							
-							last_green_state = 4'b0011;
-					   end
-					  
-						// 3 of W str + left! Want 0001, 0011, 1001
-						else if(last_green_state == 'b0101) begin
-						
-							if (w_str_sensor && e_str_sensor) begin
-								next_state = 'b0001;  //W str and left
-							end
-							else if (e_left_sensor && w_left_sensor) begin
-								next_state = 'b0011;  //EW left
-							end
-							else if (ns_sensor) begin
-								next_state = 'b1001;  //NS straight
-							end
-							else begin
-								next_state = 'b0000;
-							end
-							
-							last_green_state = 4'b0101;
-					   end
-					
-						
-						// 3 of E str + left! Want 0001, 0011, 0101
-						else if(last_green_state == 'b0111) begin
-						
-							if (w_str_sensor && e_str_sensor) begin
-								next_state = 'b0001;  //W str and left
-							end
-							else if (e_left_sensor && w_left_sensor) begin
-								next_state = 'b0011;  //EW left
-							end
-							else if (w_str_sensor && w_left_sensor) begin
-								next_state = 'b0101;  //W str and left
-							end
-							else begin
-								next_state = 'b0000;
-							end
-							
-							last_green_state = 4'b0111;
-					   end
-						
-						
-						// 3 of NS! Want 0011, 0101, 0111
-						
-						else if(last_green_state == 'b1001) begin
-						
-							if (e_left_sensor && w_left_sensor) begin
-								next_state = 'b0011;  //EW left
-							end
-							else if (w_str_sensor && w_left_sensor) begin
-								next_state = 'b0101;  //W str and left
-							end
-							else if (e_str_sensor && e_left_sensor) begin
-								next_state = 'b0111;  //E str and left
-							end
-							else begin
-								next_state = 'b0000;
-							end
-							
-							last_green_state = 4'b1001;
-					   end
-					  
-					  
-					   else begin
-							next_state = 'b0000;
-						   last_green_state = 4'b0000;
+								next_state = 'b0000;  	// Red
+								pri = 0;
+								end
 						end
+						1: begin
+						if (!ns_sensor) begin
+							if	((e_str_sensor || w_str_sensor) && !(w_left_sensor || e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin 
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else begin
+								next_state = 'b0000;  	// Red
+								pri = 0;
+								end
+							end
+							else begin //ns_sensor = 1
+							
+							if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin 
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0101;  	// W str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
+								
+							/*if	((e_left_sensor || w_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin 
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0111;  	// E str + E Left
+								pri = 2;
+								end
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
+							end
+							*/
+							end
+						end
+						2: begin
+						if (!ns_sensor) begin
+							if	((e_str_sensor || w_str_sensor) && !(w_left_sensor || e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor) && !(w_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0111;  	// E left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor) && !(e_left_sensor || w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0101;  	// W left and str
+								pri = 2;
+								end
+							else if	((w_left_sensor && e_left_sensor) && !(w_str_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0011;  	// EW left
+								pri = 2;
+								end
+							else if	((e_left_sensor && w_str_sensor) && !(w_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && e_str_sensor) && !(e_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_left_sensor && e_str_sensor) && !(w_left_sensor || w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_left_sensor && w_str_sensor) && !(e_left_sensor || e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && e_left_sensor) && !(w_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor) && !(e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && e_left_sensor && w_left_sensor) && !(w_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	((w_str_sensor && e_left_sensor && w_left_sensor) && !(e_str_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+								
+							else if	((e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor)) 
+								begin
+								next_state = 'b0001;  	// EW straight
+								pri = 1;
+								end
+							else if	(!(e_str_sensor && w_str_sensor && w_left_sensor && e_left_sensor) && ns_sensor) 
+								begin
+								next_state = 'b1001;  	// NS
+								pri = 0;
+								end
+							else begin
+								next_state = 'b0000;  	// Red
+								pri = 0;
+								end
+						end
+						else begin // ns_sensor == 1
+							pri = 0;
+							next_state= 'b1001;
+						end
+						end
+						default: begin
+							pri = 0;
+							next_state= 'b0000;
+							
+						end
+						/*
+						else if	(e_left_sensor && w_left_sensor) next_state = 'b0011;  	// EW left
+						else if	(w_left_sensor && w_str_sensor) 	next_state = 'b0101;  	// W str and left
+						else if	(e_left_sensor && e_str_sensor) 	next_state = 'b0111;  	// E str and left
+						else if	(ns_sensor) 							next_state = 'b1001;  	// NS str
+						else													next_state = 'b0000;  	// Stay: R
+						*/
+						endcase
 					  
 					 end
 			 default: begin next_state = 'b0000; 
 						last_green_state = 4'b0000;
+						if (pri == 0) pri = 0;
+						else if (pri == 1) pri = 1;
+						else pri = 2;
 						end
 			
 		endcase

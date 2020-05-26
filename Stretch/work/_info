@@ -34,15 +34,15 @@ Z4 o-work work -sv
 Z5 tCvgOpt 0
 vtraffic_light_controller
 R0
-!s110 1590391073
+!s110 1590460319
 !i10b 1
-!s100 o@WCM5XkVZi=S^S9nC6IA1
-I97>f6a_bfm>=SQ@CSi4:X3
+!s100 9ckk_[CXVG6@6Ve6d2V780
+I6Qf[I?@mZ`^_gCc>ze4M^2
 R1
 !s105 traffic_light_controller_sv_unit
 S1
 R2
-w1590390377
+w1590460293
 8C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv
 FC:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv
 L0 6
@@ -50,7 +50,7 @@ R3
 r1
 !s85 0
 31
-!s108 1590391073.000000
+!s108 1590460319.000000
 !s107 C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv|
 !s90 -reportprogress|300|-work|work|-sv|-stats=none|C:/Users/Daniel/Desktop/CSE 140L/Lab 3/Stretch/traffic_light_controller.sv|
 !i113 1
