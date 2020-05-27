@@ -116,9 +116,9 @@ initial begin
   test_cnt++;
   ns_sensor              = 1'b1;
   #100ns e_left_sensor   = 1'b1;
-  $display("e_left_sensor on");
+  //$display("e_left_sensor on");
   #200ns ns_sensor       = 1'b0;
-  $display("ns_sensor off");
+  //$display("ns_sensor off");
   #20ns  e_left_sensor   = 1'b0;
   #100ns;
 

@@ -452,7 +452,7 @@ module traffic_light_controller(
 						else if (pri == 1) pri = 1;
 						else pri = 2;
 						last_green_state = 4'b0001;
-						if((ctr_10 == 10 || (!e_str_sensor && !w_str_sensor)) && (e_left_sensor || w_left_sensor || ns_sensor)) begin
+						if((ctr_10 == 10 ) && (e_left_sensor || w_left_sensor || ns_sensor || (!e_str_sensor && !w_str_sensor))) begin
 								next_state = 'b0010;
 						end
 						else if(ctr_5 == 5)    begin
@@ -475,7 +475,7 @@ module traffic_light_controller(
 						else if (pri == 1) pri = 1;
 						else pri = 2;
 						last_green_state <= 4'b0011;
-						if((ctr_10 == 10 || (!e_left_sensor && !w_left_sensor)) && (e_str_sensor || w_str_sensor || ns_sensor)) begin
+						if((ctr_10 == 10 ) && (e_str_sensor || w_str_sensor || ns_sensor || (!e_left_sensor && !w_left_sensor))) begin
 								next_state = 'b0100;
 						end
 						else if(ctr_5 == 5)    begin
@@ -498,7 +498,7 @@ module traffic_light_controller(
 						else if (pri == 1) pri = 1;
 						else pri = 2;
 						last_green_state <= 4'b0101;
-						if((ctr_10 == 10 || (!w_str_sensor && !w_left_sensor)) && (e_str_sensor || e_left_sensor || ns_sensor)) begin
+						if((ctr_10 == 10 ) && (e_str_sensor || e_left_sensor || ns_sensor || (!w_str_sensor && !w_left_sensor))) begin
 								next_state = 'b0110;
 						end
 						else if(ctr_5 == 5)    begin
@@ -521,7 +521,7 @@ module traffic_light_controller(
 						else if (pri == 1) pri = 1;
 						else pri = 2;
 						last_green_state <= 4'b0111;
-						if((ctr_10 == 10 || (!e_str_sensor && !e_left_sensor)) && (w_str_sensor || w_left_sensor || ns_sensor)) begin
+						if((ctr_10 == 10 ) && (w_str_sensor || w_left_sensor || ns_sensor|| (!e_str_sensor && !e_left_sensor))) begin
 								next_state = 'b1000;
 						end
 						else if(ctr_5 == 5)    begin
